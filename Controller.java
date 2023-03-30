@@ -31,7 +31,6 @@ class Controller implements ActionListener, MouseListener, KeyListener
 									//Arbitrarily chosen key for switching between jumping from room to room
 									//  and scrolling between rooms
 	boolean keyE;				//Used for enabling Edit mode
-	boolean editPotsAndNotTiles;//Used for switching between (adding/removing Tiles) and (adding Pots)
 	boolean LinkShouldMoveRight;
 	boolean LinkShouldMoveLeft;
 	boolean LinkShouldMoveUp;
@@ -69,7 +68,7 @@ class Controller implements ActionListener, MouseListener, KeyListener
 		//int tilePosY = model.snapToGrid(mouseY);
 		if(view.inEditMode)
 		{
-			if(editPotsAndNotTiles)
+			if(view.editPotsAndNotTiles)
 				{model.addPot(adjustedPosX, adjustedPosY);}					//if(inPotEditMode){addPotToListOfSprites}
 			else
 			{
@@ -138,7 +137,7 @@ class Controller implements ActionListener, MouseListener, KeyListener
 			case KeyEvent.VK_X:		keyX	 = false; break;
 			case KeyEvent.VK_J:	jumpRooms_doNotScroll = !jumpRooms_doNotScroll; break;
 			//^^^Flip the truth value of jumpRooms_doNotScroll every time key 'J' is pressed and then released
-			case KeyEvent.VK_P:	  editPotsAndNotTiles = !editPotsAndNotTiles;   break;
+			case KeyEvent.VK_P:	  view.editPotsAndNotTiles = !view.editPotsAndNotTiles;   break;
 			//^^^Flip the truth value of editPotsAndNotTiles every time key 'P' is pressed and then released
 			case KeyEvent.VK_E:		keyE	 = false; break;
 		}
@@ -149,6 +148,9 @@ class Controller implements ActionListener, MouseListener, KeyListener
 		if(c=='s'){model.saveSpriteList();}//Save Tile locations to file
 		if(c=='l'){model.loadSpriteList();}//Load Tile locations from file
 		if(c=='e'){view.inEditMode = !view.inEditMode;}	//Toggles printing Editmode to screen.
+
+		//if(c=='b'/*Character.CONTROL*/){model.addBoomerang();}	//Make Link throw Boomerang when keyB is pressed *and* released
+		if(e.getKeyCode()==KeyEvent.VK_CONTROL){model.addBoomerang_usingLinkPosAndLinkDir();}	//Make Link throw Boomerang when ControlKey is pressed *and* released
 
 		//Debug
 		//if(jumpRooms_doNotScroll){System.out.println("jumpRooms");}

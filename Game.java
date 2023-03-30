@@ -8,7 +8,7 @@ import java.awt.Toolkit;
 
 public class Game extends JFrame
 {
-	public static final boolean DEBUG = true;	//Every class (in the same folder) should be able to access this variable.
+	public static final boolean DEBUG = false;	//Every class (in the same folder) should be able to access this variable.
 
 
 	Model model = new Model();
@@ -26,7 +26,7 @@ public class Game extends JFrame
 		view.addMouseListener(controller); //Controller is in charge of handling mouse clicks
 		this.addKeyListener(controller);   //Controller is in charge of handling key events
 		
-		this.setTitle("A4 - Link + Map Editor");
+		this.setTitle("A5 - Link + Map Editor + Boomerang+Pot");
 		//this.setSize(Tile.width*10, Tile.height*10+25);
 		this.setSize((new Tile()).width*10+BORDER_WIDTH, (new Tile()).height*10+BORDER_HEIGHT);
 			//getHeight() is this.getHeight(), which is JFrame.getHeight(), which is JFrame.#pixelsTall

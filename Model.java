@@ -80,15 +80,15 @@ class Model
 
 			//if(endOfLifeForCurrSprite){deleteCurrSpritefromEverything;}
 			//if(sHasHitAnotherSprite && timeElapsedSinceDisplaying_BrokenSprite_Img>1second){delete_s_fromEverything;}
-			//if(ThisSpriteIsPot AND thisSpriteShouldNOTstillExistOnScreen AND brokenPotImgHasBeenDisplayedLongEnough){deleteThisSpritefromEverything;}
-			if(s.isPot() && s.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed && s.breakageToDeletionTimer<=0)
+			//if(ThisSpriteIsPotOrBmrg AND thisSpriteShouldNOTstillExistOnScreen AND brokenPotOrBmrgImgHasBeenDisplayedLongEnough){deleteThisSpritefromEverything;}
+			if(s.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed && s.breakageToDeletionTimer<=0)
 			{
 				//Display brokenSprite img for some amount of time before deleting the Sprite
 				//while(s.breakageToDeletionTimer-- > 0){System.out.println("Model.update(): breakageToDeletionTimer: "+s.breakageToDeletionTimer);}
 				//^^^ This doesn't work because it stops the ENTIRE rest of the program while executing the loop AND it's too variably-timed
 
 				spriteList.remove(s);
-				if(Game.DEBUG){System.out.println("Model.update():  Removed Pot from spriteList that has both broken and finished being displayed");}
+				if(Game.DEBUG){System.out.println("Model.update():  Removed Pot or Boomerang from spriteList that has both broken and finished being displayed");}
 			}
 		}
 	}
@@ -112,6 +112,47 @@ class Model
 		dest_y = y;
 	}*/
 
+
+
+
+
+	//BOOMERANG STUFF
+	public void addBoomerang_usingLinkPosAndLinkDir()
+	{
+		//uses Link's position
+		int bmrgSpawnPosX = 25;
+			 if(this.link.movDirX ==  1){bmrgSpawnPosX = this.link.posnX + this.link.width+1;}	//if(LinkIsFacingRight){throwBmrgFromLink'sRightEdge, to avoid collision with Link}
+		else if(this.link.movDirX == -1){bmrgSpawnPosX = this.link.posnX;}						//if(LinkIsFacingLeft){throwBmrgFromLink'sLeftEdge, to avoid collision with Link}
+		else if(this.link.movDirX ==  0){bmrgSpawnPosX = this.link.posnX + this.link.width/2;}	//if(LinkIsFacingUpOrDown){throwBmrgAwayFromLink'sHorizontalCenterlineAxis, for aesthetics}
+		int bmrgSpawnPosY = 25;
+			 if(this.link.movDirY ==  1){bmrgSpawnPosY = this.link.posnY + this.link.height+1;}	//if(LinkIsFacingDown){throwBmrgFromLink'sFeet, to avoid collision with Link}
+		else if(this.link.movDirY == -1){bmrgSpawnPosY = this.link.posnY;}						//if(LinkIsFacingUp){throwBmrgFromLink'sHead, to avoid collision with Link}
+		else if(this.link.movDirY ==  0){bmrgSpawnPosY = this.link.posnY + this.link.height/2;}	//if(LinkIsFacingLeftOrRight){throwBmrgAwayFromLink'sVerticalCenterlineAxis, for aesthetics}
+		
+		if(this.link.movDirX ==  0  && this.link.movDirY ==  0)
+			{System.out.println("How is Link not facing any direction? Boomerangs will collide with Link as he throws them.");}
+
+		int bmrgMovDirX = this.link.movDirX;	//uses Link's direction
+		int bmrgMovDirY = this.link.movDirY;
+		spriteList.add( new Boomerang(bmrgSpawnPosX, bmrgSpawnPosY, bmrgMovDirX, bmrgMovDirY) );
+	}
+
+	//This isn't necessary except mayyyyyyyybeeee for a more-specific debug
+	public void removeBoomerang(int posX, int posY)
+	{
+		//i=0 is Link's sprite
+		for(int i=1; i<spriteList.size(); i++)	//Deletes ALL coordinate matches of the Pot in the ArrayList
+		{
+			Sprite currSpriteInList = spriteList.get(i);
+			//System.out.printf("bmrgPosX: %d, bmrgPosY: %d, currListBmrgX: %d, currListBmrgY: %d\n", bmrgPosX,bmrgPosY, currSpriteInList.x, currSpriteInList.y);
+			//if(unsnappedFunctionInputX == currBoomerangInArrayList.x  &&  ...){removeCurrentBoomerangFromArrayList();}
+			if( (posX == currSpriteInList.posnX) && (posY == currSpriteInList.posnY) )
+			{spriteList.remove(i);}
+		}
+		
+		//Debug
+		//System.out.printf("#Sprites: %d\n",spriteList.size());
+	}
 
 
 
@@ -324,6 +365,54 @@ class Model
 
 				//Next place:  Model.fixCollision(): Model.detectLinkCollidingWithPot_kickThatPot(): specificPot.kickThisSpriteAwayFromPassedInSprite: spriteList.remove();
 			}
+			//if(colliding Sprites are Pot and Boomerang){breakPotAndBoomerang,InitiatePotDeletionCountdownTimers}
+			else if((spr1.isPot() && spr2.isBoomerang()) || (spr1.isBoomerang() && spr2.isPot()))
+			{
+				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision between Pot and Boomerang Sprites");
+
+				//Pots are breakable/shatterable, Tiles and Links are not breakable/shatterable. 
+				//Since both spr1 and spr2 are a Pot and Boomerang (though not necessarily in that order), they're both breakable,
+				//making   if(spr#.isBreakable)  unnecessary
+
+				//breakTheSprite by showing the brokenSprite image
+				//Assuming index0==pictureOfIntactSprite and index1==pictureOfBrokenSprite
+					 if(spr1.isPot()){spr1.currImgIndex = 1;}
+				else if(spr2.isPot()){spr2.currImgIndex = 1;}
+
+				//Mark these Sprites for deletion
+				spr1.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed = true;
+				spr2.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed = true;
+				if(Game.DEBUG){System.out.println("Model.fixCollision():  PotBoomerangCollision: forBOTHpotANDboomerang: PotAndBoomerang.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed = true");}
+
+				//Wait x# of seconds then delete the Sprite entirely (done in Model.update(), which deletes a Sprite if its (isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed == false && breakageToDeletionTimer<=0))
+				//while(breakageToDeletionTimer-- > 0){System.out.println("Sprite.kickThisSprite_AwayFrom_PassedInSprite(): breakageToDeletionTimer: "+breakageToDeletionTimer);}
+				//^^^ This doesn't work because it stops the ENTIRE rest of the program while executing the loop AND it's too variably-timed
+
+				//Next place:  Model.fixCollision(): Model.detectLinkCollidingWithPot_kickThatPot(): specificPot.kickThisSpriteAwayFromPassedInSprite: spriteList.remove();
+			}
+			//if(colliding Sprites are Pot and Pot){breakPots,InitiatePotDeletionCountdownTimers}
+			else if((spr1.isTile() && spr2.isBoomerang()) || (spr1.isBoomerang() && spr2.isTile()))
+			{
+				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision between Pot and Boomerang Sprites");
+
+				//Pots are breakable/shatterable, Tiles and Links are not breakable/shatterable. 
+				//Since both spr1 and spr2 are a Pot and Boomerang (though not necessarily in that order), they're both breakable,
+				//making   if(spr#.isBreakable)  unnecessary
+
+				//breakTheSprite by showing the brokenSprite image
+				//Neither Tile nor Boomerang have brokenSprite images, so don't alter currImgIndex or stuff
+
+				//Mark these Sprites for deletion
+				if(!spr1.isTile()){spr1.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed = true;}
+				if(!spr2.isTile()){spr2.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed = true;}
+				if(Game.DEBUG){System.out.println("Model.fixCollision():  TileBoomerangCollision: forBoomerang: Boomerang.isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed = true");}
+
+				//Wait x# of seconds then delete the Sprite entirely (done in Model.update(), which deletes a Sprite if its (isBrokenANDshouldBeDeletedAfterBrokenImgDisplayed == false && breakageToDeletionTimer<=0))
+				//while(breakageToDeletionTimer-- > 0){System.out.println("Sprite.kickThisSprite_AwayFrom_PassedInSprite(): breakageToDeletionTimer: "+breakageToDeletionTimer);}
+				//^^^ This doesn't work because it stops the ENTIRE rest of the program while executing the loop AND it's too variably-timed
+
+				//Next place:  Model.fixCollision(): Model.detectLinkCollidingWithPot_kickThatPot(): specificPot.kickThisSpriteAwayFromPassedInSprite: spriteList.remove();
+			}
 
 			//if(colliding Sprites are Pot and Tile){breakPot,InitiatePotDeletionCountdownTimer}
 			else if((spr1.isPot() && spr2.isTile())  ||  (spr1.isTile() && spr2.isPot()))
@@ -359,7 +448,8 @@ class Model
 			}
 			else
 			{
-				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision, but not between nor (Pot and Link), nor (Pot and Pot), nor (Pot and Tile)");
+				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision, but not between nor (Pot and Link), nor (Pot and Pot), nor (Pot and Tile)."+
+													",  nor (Pot and Boomerang)");
 			}
 
 			if(Game.DEBUG) System.out.println("~~~~~spr1.isPot():  "+spr1.isPot() +", spr2.isPot():  "+spr2.isPot()+
@@ -517,13 +607,14 @@ class Model
 	{
 		Json jsonObj = Json.newObject();
 		Json tmpList = Json.newList();
+		System.out.println("\n\nSaving map...\n\n");
 		jsonObj.add("Sprite Positions",tmpList);
 		for(int i=0; i<spriteList.size(); i++)
 		{
 			tmpList.add( spriteList.get(i).marshal() );
 		}
 		jsonObj.save("map.json");
-		if(Game.DEBUG){System.out.println("\n\nMap saved.\n\n");}
+		System.out.println("\n\nMap saved.\n\n");
 		return jsonObj;
 	}
 
@@ -531,7 +622,7 @@ class Model
 		{this.unmarshal();}
 	void unmarshal()
 	{
-		System.out.println("\n\nLoading map...\n***Link's movement will be disabled during the loading process\n\n");
+		System.out.println("\n\nLoading map...\n***Game's movement will be disabled during the loading process\n\n");
 		spriteList.clear();	//Empty (and eventually overwrite) the existing ArrayList
 		
 
@@ -547,9 +638,13 @@ class Model
 			Link tmpLinkCharacter = new Link( tmpLinkCharacter_data );
 			spriteList.add( tmpLinkCharacter );	//First item (0th index) in the Json list will now be Link's info (x,y,dir)
 			link = tmpLinkCharacter;			//Update the Model's more-easily-accessible Link shorthand (just model.link instead of model.spriteList.get(0))
+			if(Game.DEBUG)	System.out.println("useJsonLink_NOTcurrGameLink_WhenLoadingSaveData == true");
 		}
 		else
-		{	spriteList.add( this.link );}	//Add Model's link object (game character) to the empty list of game objects
+		{	//Add Model's link object (game character) to the empty list of game objects
+			spriteList.add( this.link );
+			if(Game.DEBUG)	System.out.println("useJsonLink_NOTcurrGameLink_WhenLoadingSaveData == false");
+		}
 
 		
 		for(int i=1; i<tmpList.size(); i++)				//i=0 is Link's info
@@ -575,16 +670,26 @@ class Model
 					//e.printStackTrace(System.err);
 					//System.out.println("Failed to add Pot to spriteList");
 				}
+
+				try{
+					spriteList.add( new Boomerang(  tmpList.get(i) ) );
+					//ArrayList.add(new Pot( JsonObject )   )
+				}
+				catch(Exception e)
+				{
+					//e.printStackTrace(System.err);
+					//System.out.println("Failed to add Boomerang to spriteList");
+				}
 				if(Game.DEBUG)	System.out.println("");
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace(System.err);
-				System.out.println("Failed to add Pot AND Failed to add Tile to spriteList");
+				System.out.println("Failed to add Pot AND Failed to add Tile AND Failed to add Boomerang to spriteList");
 				System.exit(1);		//Exit the entire game
 			}
 			//These complicated blocks could be eliminated by adding more Json lists to the map.json file
 		}
-		if(Game.DEBUG){System.out.println("\n\nMap loaded.\n\n");}
+		System.out.println("\n\nMap loaded.\n\n");
 	}
 }

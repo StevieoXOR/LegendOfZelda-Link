@@ -25,6 +25,8 @@ public abstract class Sprite
 	BufferedImage[] imgs;
 
 
+	//This isn't abstract because I make a default toString here, but every Sprite really should Override this toString because
+	//  not every Sprite uses ALL the info Sprite provides
 	@Override
 	public String toString()
 	{return "!!!!!Sprite:  posnX="+posnX+", posnY="+posnY+", PREV_posnX="+PREV_posnX+", PREV_posnY="+PREV_posnY
@@ -59,10 +61,17 @@ public abstract class Sprite
 		if(Game.DEBUG) System.out.println("Set Sprite's Previous Location");
 	}
 
-	public void move_walk(double distanceX, double distanceY)
+	public void move_walk(int distanceX, int distanceY)
 	{
-		posnY += (int)distanceY;
-		posnX += (int)distanceX;
+		posnY += distanceY;
+		posnX += distanceX;
+
+			 if(distanceX>0){movDirX= 1;}
+		else if(distanceX<0){movDirX=-1;}
+		else{				 movDirX= 0;}
+			 if(distanceY>0){movDirY= 1;}
+		else if(distanceY<0){movDirY=-1;}
+		else{				 movDirY= 0;}
 	}
 
 

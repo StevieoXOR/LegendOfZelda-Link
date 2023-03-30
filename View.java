@@ -30,6 +30,7 @@ class View extends JPanel
 	static int heightPerRoom;	//  based off the window's (frame's) width because Game extends JFrame while View doesn't extend JFrame
 
 	boolean inEditMode;
+	boolean editPotsAndNotTiles;	//Used for switching between (adding/removing Tiles) and (adding Pots)
 
 
 	View(Controller c, Model m)
@@ -88,9 +89,10 @@ class View extends JPanel
 			currSprite.draw(g, xPosToDrawAt, yPosToDrawAt);
 		}
 
-		g.setColor(new Color(255,255,0));
+		g.setColor(new Color(0,200,50));
 		g.setFont(new Font("default", Font.BOLD, 16));
-		g.drawString("Edit mode (e): "+inEditMode, 50, 50);
+		g.drawString("Edit mode (e): "+inEditMode, 60, 60);
+		g.drawString("Edit Pots(andNotTiles) (p): "+editPotsAndNotTiles, 60, 75);
 		//drawString: X and Y don't use scrollPos because drawnStringLocation is independent of calculating where things in a room go
 
 		//int xPosToDrawAt  =  model.link.posnX - roomScrollPosX;
