@@ -1,14 +1,19 @@
 //Steven Lynch
-//Mar 29, 2023
-//Project: Character named Link can traverse graphical map via keys A,W,D,X. Map can switch between jumping between rooms
-//  and scrolling between rooms. Can save and load Tile and Clay Pot locations (part of the map) via ArrayList and JSON file.
+//Mar 30, 2023
+//Link LegendOfZelda Project: Character named Link can traverse graphical map via arrow keys or A,W,D,X.
+//Map can switch between jumping between rooms and scrolling between rooms by pressing key J.
+//Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+//To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot,
+//  1) Enter edit mode by pressing key E
+//  2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+//Press key CTRL to throw a boomerang.
 
 import javax.swing.JFrame;
 import java.awt.Toolkit;
 
 public class Game extends JFrame
 {
-	public static final boolean DEBUG = false;	//Every class (in the same folder) should be able to access this variable.
+	public static final boolean DEBUG = true;	//Every class (in the same folder) should be able to access this variable.
 
 
 	Model model = new Model();
@@ -53,8 +58,8 @@ public class Game extends JFrame
 		{
 			controller.update();
 			model.update();
-			view.repaint(); // This will indirectly call View.paintComponent
-			Toolkit.getDefaultToolkit().sync(); // Updates screen
+			view.repaint();						//This will indirectly call View.paintComponent
+			Toolkit.getDefaultToolkit().sync(); //Updates screen
 
 			// Go to sleep for 50 milliseconds. [1000ms/sec]/[50ms/frameUpdate]=20frames/sec
 			try
@@ -65,7 +70,7 @@ public class Game extends JFrame
 				e.printStackTrace();
 				System.exit(1);
 			}
-			//System.out.println("hi"); // remove this line
+			//System.out.println("Game is running");
 		}
 	}
 

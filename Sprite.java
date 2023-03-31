@@ -1,7 +1,12 @@
 //Steven Lynch
-//Mar 29, 2023
-//Project: Character named Link can traverse graphical map via keys A,W,D,X. Map can switch between jumping between rooms
-//  and scrolling between rooms. Can save and load Tile and Clay Pot locations (part of the map) via ArrayList and JSON file.
+//Mar 30, 2023
+//Link LegendOfZelda Project: Character named Link can traverse graphical map via arrow keys or A,W,D,X.
+//Map can switch between jumping between rooms and scrolling between rooms by pressing key J.
+//Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+//To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot,
+//  1) Enter edit mode by pressing key E
+//  2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+//Press key CTRL to throw a boomerang.
 
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
@@ -13,6 +18,7 @@ public abstract class Sprite
 	//Set to 0 by default (since they're class (primitive) variables)
 	//Not every Sprite will use movSpeed, movDirX, movDirY, and noSlidingFriction, but it makes it easier to include it here in case I ever
 	//  change my mind and want to make a sprite movable.
+	//currImgIndex is only used for animation
 	//movDirX and movDirY should only ever be -1,0,1. Other values would improperly speed up/slow down the Sprite.
 	int posnX, posnY, PREV_posnX, PREV_posnY, currImgIndex, width, height, movSpeed, movDirX, movDirY, breakageToDeletionTimer;
 	public boolean isBreakable = false;		//Default value MUST be false since Link is not considered breakable. Breakable Sprites must override this line
@@ -46,7 +52,8 @@ public abstract class Sprite
 	public abstract void update();
 	public abstract void draw(Graphics g, int adjusted_xPosToDrawAt, int adjusted_yPosToDrawAt);
 	public abstract Json marshal();
-	//public abstract void unmarshal();	//Simplified name of this line is just a constructor
+	//public abstract void unmarshal();	//Simplified name of this line is just a constructor, which can't be labeled polymorphically without a wrapper
+	//  like savedDataConstructor();, where each class would then have to implement something like savedDataConstructor(){Tile(savedDataFrom_SaveFile);}
 
 
 
@@ -58,7 +65,7 @@ public abstract class Sprite
 	{
 		PREV_posnY = posnY;
 		PREV_posnX = posnX;
-		if(Game.DEBUG) System.out.println("Set Sprite's Previous Location");
+		if(Game.DEBUG) System.out.println("Sprite.setPreviousLocation():  Set Sprite's Previous Location");
 	}
 
 	public void move_walk(int distanceX, int distanceY)
@@ -72,6 +79,7 @@ public abstract class Sprite
 			 if(distanceY>0){movDirY= 1;}
 		else if(distanceY<0){movDirY=-1;}
 		else{				 movDirY= 0;}
+		if(Game.DEBUG) System.out.println("Sprite.move_walk():  Sprite moved/walked and updated its movement directions");
 	}
 
 
@@ -206,8 +214,5 @@ public abstract class Sprite
 		
 		movSpeed++;	//The longer the time period the Sprite is kicked, the more times this method is called, acting like a foot carrying-through and applying more
 		//force to the kicked Sprite
-
-
-		//I don't (and will never) update movement speed (movSpeed) here because that is a Sprite-specific thing to do (it differs between different types of Sprites)
 	}
 }

@@ -1,7 +1,12 @@
 //Steven Lynch
-//Mar 29, 2023
-//Project: Character named Link can traverse graphical map via keys A,W,D,X. Map can switch between jumping between rooms
-//  and scrolling between rooms. Can save and load Tile and Clay Pot locations (part of the map) via ArrayList and JSON file.
+//Mar 30, 2023
+//Link LegendOfZelda Project: Character named Link can traverse graphical map via arrow keys or A,W,D,X.
+//Map can switch between jumping between rooms and scrolling between rooms by pressing key J.
+//Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+//To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot,
+//  1) Enter edit mode by pressing key E
+//  2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+//Press key CTRL to throw a boomerang.
 
 import javax.swing.JPanel;
 import java.awt.Graphics;
@@ -29,6 +34,9 @@ class View extends JPanel
 	static int widthPerRoom;	//Even though this class extends JPanel, THE Game CLASS must SET the room size (these 2 vars) IF the room size is
 	static int heightPerRoom;	//  based off the window's (frame's) width because Game extends JFrame while View doesn't extend JFrame
 
+	boolean jumpRooms_doNotScroll;	//true==jumpRoomsByKeypress, false=scrollAcrossRoomsByKeypress
+									//Arbitrarily chosen key for switching between jumping from room to room
+									//  and scrolling between rooms
 	boolean inEditMode;
 	boolean editPotsAndNotTiles;	//Used for switching between (adding/removing Tiles) and (adding Pots)
 
@@ -38,6 +46,7 @@ class View extends JPanel
 		c.setView(this);
 		model = m;
 		inEditMode = false;
+		jumpRooms_doNotScroll = true;
 		
 		//		TURTLE-RELATED STUFF
 		/*b1 = new JButton("Don't push me");
@@ -92,7 +101,8 @@ class View extends JPanel
 		g.setColor(new Color(0,200,50));
 		g.setFont(new Font("default", Font.BOLD, 16));
 		g.drawString("Edit mode (e): "+inEditMode, 60, 60);
-		g.drawString("Edit Pots(andNotTiles) (p): "+editPotsAndNotTiles, 60, 75);
+		g.drawString("Edit Pots (and not Tiles)  (p): "+editPotsAndNotTiles, 60, 75);
+		g.drawString("JumpRooms_doNotScroll (j): "+jumpRooms_doNotScroll, 60, 90);
 		//drawString: X and Y don't use scrollPos because drawnStringLocation is independent of calculating where things in a room go
 
 		//int xPosToDrawAt  =  model.link.posnX - roomScrollPosX;

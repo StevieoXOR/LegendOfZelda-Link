@@ -1,7 +1,12 @@
 //Steven Lynch
-//Mar 29, 2023
-//Project: Character named Link can traverse graphical map via keys A,W,D,X. Map can switch between jumping between rooms
-//  and scrolling between rooms. Can save and load Tile and Clay Pot locations (part of the map) via ArrayList and JSON file.
+//Mar 30, 2023
+//Link LegendOfZelda Project: Character named Link can traverse graphical map via arrow keys or A,W,D,X.
+//Map can switch between jumping between rooms and scrolling between rooms by pressing key J.
+//Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+//To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot,
+//  1) Enter edit mode by pressing key E
+//  2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+//Press key CTRL to throw a boomerang.
 
 
 import java.awt.image.BufferedImage;
@@ -54,7 +59,7 @@ public class Pot extends Sprite
 
 
 	
-	@Override
+	@Override	//Overrides Sprite's toString() method. Useful for methodNameTypos creating something not actually FROM Sprite
 	public String toString()
 		{return "***Pot (leftX,rightX,topY,bottomY) = ("+posnX+","+(posnX+width)+", "+posnY+","+(posnY+height)+")"+ ", PotWidth="+width+", PotHeight="+height
 		      /*+ "\tPrevPotLocation (leftX,rightX,topY,bottomY) = ("+PREV_posnX+","+(PREV_posnX+width)+", "+PREV_posnY+","+(PREV_posnY+height)+")"   I DON'T USE THIS*/

@@ -1,7 +1,12 @@
 //Steven Lynch
-//Mar 29, 2023
-//Project: Character named Link can traverse graphical map via keys A,W,D,X. Map can switch between jumping between rooms
-//  and scrolling between rooms. Can save and load Tile and Clay Pot locations (part of the map) via ArrayList and JSON file.
+//Mar 30, 2023
+//Link LegendOfZelda Project: Character named Link can traverse graphical map via arrow keys or A,W,D,X.
+//Map can switch between jumping between rooms and scrolling between rooms by pressing key J.
+//Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+//To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot,
+//  1) Enter edit mode by pressing key E
+//  2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+//Press key CTRL to throw a boomerang.
 
 
 
@@ -49,7 +54,7 @@ class Link extends Sprite
 		//static BufferedImage[] imagesOfLink = null;	//Now unnecessary because Sprite class has the "imgs" Array
 	static final int numImagesTotal = 32;
 	static final int numImagesPerDirection = 8;
-	int currCycle_imageIndex;						//Used only for the animation
+		//int currCycle_imageIndex;						//Used only for the animation	REPLACED BY currImgIndex FROM Sprite
 	Direction heading;	//Based on where images are in the array
 
 	//Already contains width and height from Sprite class
@@ -87,7 +92,7 @@ class Link extends Sprite
 				//From (inside) the (same) folder that the View class is in, enter the folder named "images", retrieve file "Link#.png", store resultant Image into imagesOfLink[i]
 				//Example Image Location: "images/Link1.png"
 		}
-		currCycle_imageIndex = 0;
+		currImgIndex = 0;
 	}
 
 	@Override
@@ -99,7 +104,7 @@ class Link extends Sprite
 	public boolean isLink()
 		{return true;}
 
-	//Doesn't do anything since Link doesn't move on his own
+	//Doesn't do anything since Link doesn't move on his own (he only moves when the user tells him to move OR when he is getting his collision fixed)
 	@Override
 	public void update(){}
 
@@ -126,20 +131,24 @@ class Link extends Sprite
 	@Override
 	public void draw(Graphics g, int xPosToDrawAt, int yPosToDrawAt)
 	{
-		final int imgIndexInEntireArray = currCycle_imageIndex + (heading.direction)*numImagesPerDirection;
+		final int imgIndexInEntireArray = currImgIndex + (heading.direction)*numImagesPerDirection;
 		//if(Game.DEBUG){System.out.println("Drawing Link (Actual: "+viewerPOV_LeftSideOfBodyX+","+headHeightY+") - (adjustedToFitOnScreen: "+xPosToDrawAt+","+yPosToDrawAt+")");}
 		if(Game.DEBUG){System.out.println("Drawing Link (width,height: "+width+","+height+") (ActualXY: "+posnX+","+posnY+") - (adjustedXYtoFitOnScreen: "+xPosToDrawAt+","+yPosToDrawAt+")");}
 		if(Game.DEBUG){System.out.println("LinkImgIndexInArray (subArrayForSpecificDirection_currCycle_imageIndex + (heading.direction)*numImagesPerDirection): "
-											+imgIndexInEntireArray+"=("+currCycle_imageIndex +"+"+ ((heading.direction)*numImagesPerDirection)+")");}
+											+imgIndexInEntireArray+"=("+currImgIndex +"+"+ ((heading.direction)*numImagesPerDirection)+")");}
+		//By subArray, I mean part of the array of images (i.e. indices 0-7 are for DownFacingLink, indices 8-15 are for LeftFacingLink,
+		//   indices 16-23 are for RightFacingLink, indices 24-31 are for UpFacingLink). Indices 16-23 would be one subarray.
 		// currLinkImgInCurrLinkDirection'sCycle, xPosToDrawAt, yPosToDrawAt, LinkImgWidth, LinkImgHeight, null );
 		g.drawImage( imgs[imgIndexInEntireArray], xPosToDrawAt, yPosToDrawAt,   this.width, this.height,   null );
 	}
+
+	//This method can't go in Sprite because not every Sprite's imgs Array is set up this way.
 	public void updateImageNumUponMoving(Direction dir)
 	{
 		heading = dir;
-		currCycle_imageIndex++;		//This one value can be associated with 4 different images since there are 4 different directions.
-		if(currCycle_imageIndex >= numImagesPerDirection)
-			{currCycle_imageIndex = 0;}
+		currImgIndex++;		//This one value can be associated with 4 different images since there are 4 different directions.
+		if(currImgIndex >= numImagesPerDirection)
+			{currImgIndex = 0;}
 	}
 
 

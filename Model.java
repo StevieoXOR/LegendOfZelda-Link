@@ -1,7 +1,12 @@
 //Steven Lynch
-//Mar 29, 2023
-//Project: Character named Link can traverse graphical map via keys A,W,D,X. Map can switch between jumping between rooms
-//  and scrolling between rooms. Can save and load Tile and Clay Pot locations (part of the map) via ArrayList and JSON file.
+//Mar 30, 2023
+//Link LegendOfZelda Project: Character named Link can traverse graphical map via arrow keys or A,W,D,X.
+//Map can switch between jumping between rooms and scrolling between rooms by pressing key J.
+//Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+//To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot,
+//  1) Enter edit mode by pressing key E
+//  2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+//Press key CTRL to throw a boomerang.
 import java.util.ArrayList;
 
 
@@ -195,14 +200,14 @@ class Model
 		int tilePosY = snapToGrid(posY);
 		for(int i=0; i<spriteList.size(); i++)	//Deletes ALL coordinate matches of the Tile in the ArrayList
 		{
-			//System.out.printf("tilePosX: %d, tilePosY: %d, currListTileX: %d, currListTileY: %d\n",tilePosX, tilePosY, tileList.get(i).x, tileList.get(i).y);
+			//System.out.printf("tilePosX: %d, tilePosY: %d, currListTileX: %d, currListTileY: %d\n",tilePosX, tilePosY, spriteList.get(i).x, spriteList.get(i).y);
 			//if(snappedFunctionInputX == currTileInArrayList.x  &&  ...){removeCurrentTileFromArrayList();}
 			if( (tilePosX == spriteList.get(i).posnX) && (tilePosY == spriteList.get(i).posnY) )
 			{spriteList.remove(i);}
 		}
 		
 		//Debug
-		//System.out.printf("#Tiles: %d\n",tileList.size());
+		//System.out.printf("#Sprites: %d\n",spriteList.size());
 	}
 
 
@@ -238,7 +243,7 @@ class Model
 
 	//Updates either 1)All Sprites, 2)Only model's version of Link, 3)No Sprites.
 	//This is meant to be faster rather than ultra-thorough, since this happens EVERY single displayed game frame.
-	public void updateAllPreviousLocations_whenLegal()
+	public void updateAllPreviousLocations_whenAllAreLegal()
 	{
 		final boolean noCollisions = (detectCollisionsInSpriteList() == null);
 
@@ -415,7 +420,7 @@ class Model
 			}
 
 			//if(colliding Sprites are Pot and Tile){breakPot,InitiatePotDeletionCountdownTimer}
-			else if((spr1.isPot() && spr2.isTile())  ||  (spr1.isTile() && spr2.isPot()))
+			else if((spr1.isTile() && spr2.isPot()) || (spr1.isPot() && spr2.isTile()))
 			{
 				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision between Pot and Tile Sprites");
 
@@ -448,8 +453,8 @@ class Model
 			}
 			else
 			{
-				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision, but not between nor (Pot and Link), nor (Pot and Pot), nor (Pot and Tile)."+
-													",  nor (Pot and Boomerang)");
+				if(Game.DEBUG) System.out.println("Model.fixCollision():  Collision, but not between nor (Pot and Link), nor (Pot and Pot),  nor (Pot and Boomerang)"+
+													", nor (Tile and Boomerang), nor (Tile and Pot).");
 			}
 
 			if(Game.DEBUG) System.out.println("~~~~~spr1.isPot():  "+spr1.isPot() +", spr2.isPot():  "+spr2.isPot()+
@@ -611,6 +616,8 @@ class Model
 		jsonObj.add("Sprite Positions",tmpList);
 		for(int i=0; i<spriteList.size(); i++)
 		{
+			//Polymorphism because each Sprite has a marshal() method, but each marshal method is implemented differently
+			//(Pot has one implementation, Tile has a different implementation, Boomerang has a different implementation from both Tile and Pot)
 			tmpList.add( spriteList.get(i).marshal() );
 		}
 		jsonObj.save("map.json");
@@ -651,6 +658,7 @@ class Model
 		{
 			try
 			{
+				//if(JsonDataIsForTile){addTileToSpriteList}
 				try{
 					spriteList.add( new Tile( tmpList.get(i) ) );
 					//ArrayList.add(new Tile( JsonObject )   )
@@ -661,6 +669,7 @@ class Model
 					//System.out.println("Failed to add Tile to spriteList");
 				}
 
+				//if(JsonDataIsForPot){addPotToSpriteList}
 				try{
 					spriteList.add( new Pot(  tmpList.get(i) ) );
 					//ArrayList.add(new Pot( JsonObject )   )
@@ -671,6 +680,7 @@ class Model
 					//System.out.println("Failed to add Pot to spriteList");
 				}
 
+				//if(JsonDataIsForBoomerang){addBoomerangToSpriteList}
 				try{
 					spriteList.add( new Boomerang(  tmpList.get(i) ) );
 					//ArrayList.add(new Pot( JsonObject )   )
@@ -685,7 +695,8 @@ class Model
 			catch(Exception e)
 			{
 				e.printStackTrace(System.err);
-				System.out.println("Failed to add Pot AND Failed to add Tile AND Failed to add Boomerang to spriteList");
+				System.out.println("Failed to add Pot AND Tile AND Boomerang to spriteList."
+					+"Make sure you're not accidentally adding Link by setting this loop's starting index to 0. Link is added right before this loop.");
 				System.exit(1);		//Exit the entire game
 			}
 			//These complicated blocks could be eliminated by adding more Json lists to the map.json file
