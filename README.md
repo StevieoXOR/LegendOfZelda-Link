@@ -1,11 +1,11 @@
 # LegendOfZelda-Link
-Character named Link can traverse graphical map via arrow keys.
+Character named Link can traverse graphical map via arrow keys or the keys A, W, D, X.
 
-Map can switch between jumping between rooms and scrolling between rooms.
+Map can toggle between jumping between rooms (when Link reaches the edge of the room) and scrolling between rooms (A,W,D,X) by pressing 'J' (jumpRooms).
 
-Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing 's'(save) or 'l'(load).
+Can save and load Link, Tile, Clay Pot, Boomerang locations via ArrayList and Json file by pressing key 'S'(save) or 'L'(load).
 
-To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot, 1) Enter edit mode by pressing key E, 2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing keyP.
+To be able to add/remove Tiles (boundaries that Link cannot cross) or add a Clay Pot, 1) Enter edit mode by pressing key 'E', 2) Switch to AddPot mode (exit TileAddition/Removal mode) by pressing key 'P'.
 
 Press key CTRL to throw a boomerang.
 
